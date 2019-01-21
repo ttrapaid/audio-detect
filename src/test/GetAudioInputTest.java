@@ -12,6 +12,7 @@ import org.knowm.xchart.XYChart;
 
 import main.WaveUtils;
 import main.GetAudioInput;
+import main.AudioTimeDataPair;
 import main.Constants;
 
 /**
@@ -22,29 +23,25 @@ import main.Constants;
 public class GetAudioInputTest {
 	static int TIME_SIZE = Constants.TIME_SIZE;
 	static int SAMPLE_SIZE = Constants.SAMPLE_SIZE;
+	static int SAMPLE_FREQ = Constants.SAMPLE_FREQ;
 	public static void main(String [] args) throws LineUnavailableException {
-		AudioFormat format 	= new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, SAMPLE_SIZE, 16, 1, 2, 8000, true);
+		AudioFormat format 	= new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, SAMPLE_FREQ, 16, 1, 2, SAMPLE_SIZE, true);
 		DataLine.Info info 	= new DataLine.Info(TargetDataLine.class, format);
-		TargetDataLine line 	= (TargetDataLine) AudioSystem.getLine(info);
+		TargetDataLine line = (TargetDataLine) AudioSystem.getLine(info);
+		AudioTimeDataPair data = GetAudioInput.openLineForTenSeconds(line, format);
 		
-		double[][] data = GetAudioInput.openLineForTenSeconds(line, format);
+		double[] times = data.getTime();
+		double[] samples = data.getSamples();
 		
-		double[] time = new double[TIME_SIZE * 4];
-		double[] samples = new double[SAMPLE_SIZE * 4];
+
 		
-		for (int i = 0; i < data.length; i++) {
-			time[i] = data[0][i];
-			samples[i] = data[1][i];
-		}
+		//WaveUtils.getFrequencyFromData(samples, time, SAMPLE_SIZE, 2);
 		
-		WaveUtils.getFrequencyFromData(samples, time, SAMPLE_SIZE, 2);
-		
-		
-		final XYChart chart = QuickChart.getChart("Sample vs SampleNum", "Sample Num", "Sample", "sample", time, samples);
+		final XYChart chart = QuickChart.getChart("Sample vs Time", "Time", "Sample", "sample", times, samples);
 		final SwingWrapper<XYChart> sw = new SwingWrapper<XYChart>(chart);
 		sw.displayChart();
 		
-		chart.updateXYSeries("sample", time, samples, null);
+		chart.updateXYSeries("sample", times, samples, null);
 	    
 		sw.repaintChart();
 	

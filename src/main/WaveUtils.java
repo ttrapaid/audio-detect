@@ -15,7 +15,7 @@ public class WaveUtils {
 	 * Assumes that in the two-dimensional array parameter, 0 column is for time data
 	 * and 1 column is for sample data.
 	 * @param data
-	 */
+	 */ 
 	public static void getFrequencyFromData(double[] samples, double[] times, int rows, int cols) {
 		DoubleFFT_2D FFT = new DoubleFFT_2D(rows, cols);
 		FFT.complexForward(samples);

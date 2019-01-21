@@ -30,7 +30,7 @@ public class GetAudioInput {
 	 * @return
 	 * @throws LineUnavailableException
 	 */
-	public static double[][] openLineForTenSeconds(TargetDataLine line, AudioFormat format) throws LineUnavailableException {
+	public static AudioTimeDataPair openLineForTenSeconds(TargetDataLine line, AudioFormat format) throws LineUnavailableException {
 		line.open(format);
 		
 		byte[] data = new byte[line.getBufferSize() / 5];
@@ -49,19 +49,22 @@ public class GetAudioInput {
 			for (int i = 0; i < data.length - 2; i++) {
 				elapsedTime = ((new Date()).getTime() - startTime)/1000;
 				long temp = 	 (((data[i]) << 16) | ((data[i + 1]) << 8) | (data[i + 2]));
-				
+				System.out.println(temp);
+				System.out.println(scale);
 				sample = (float) (temp / scale);
 				time[s] = elapsedTime;
 				samples[s++] = sample;
+				
+				System.out.println(sample);
+				
 			}
 		}
 		
-		double[][] dataSet = new double[8000][8000];
+//		for (int i = 0; i < time.length; i++) {
+//			System.out.println(time[i]);
+//		}
 		
-		for (int i = 0; i < data.length; i++) {
-			dataSet[0][i] = time[i];
-			dataSet[1][i] = samples[i];
-		}
+		AudioTimeDataPair dataSet = new AudioTimeDataPair(time, samples);
 		
 		return dataSet;	
 	}
